@@ -1,0 +1,5 @@
+{
+  "port": 3010,
+  "jwtPrivateKey": "secret",
+  "db": "mongodb+srv://ano:tablequiz@tablequiz.2ce1m.mongodb.net/table-quiz?retryWrites=true&w=majority"
+}
