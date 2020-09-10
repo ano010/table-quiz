@@ -1,44 +1,46 @@
 import React, { Component } from "react";
-import QuizForm from "./quizForm";
-import QuestionForm from "./questionForm";
-import LoginForm from "./loginForm";
-import SignupForm from "./signupForm";
-import Home from "./common/home";
-import UserDashBoard from "./user-dashboard";
+import QuizForm from "../quizForm";
+import LoginForm from "../auth/loginForm";
+import SignupForm from "../auth/signupForm";
+import Home from "../home";
+import UserDashBoard from "../user-dashboard";
 import { Route, Switch, Redirect } from "react-router-dom";
-import Logout from "./logout";
-import Profile from "./profile";
-import AdminDashboard from "./admin-dashboard";
+import Logout from "../auth/logout";
+import Profile from "../profile";
+import AdminDashboard from "../admin-dashboard";
+import QuizRound from "../quizRound";
+import ProtectedRoute from "./protectedRoute";
+import { getCurrentUser } from "../../services/authService";
 
 class Routes extends Component {
   state = {};
+
+  handleNextRound = (round) => {
+    this.props.onNextRound(round);
+  };
   render() {
     const {
-      quiz,
       user,
       quizes,
       onNext,
       onLoginOrSignup,
       onPublish,
-      onAdd,
+      round_number,
     } = this.props;
     return (
       <Switch>
-        <Route
-          path="/home"
-          render={(props) => <Home {...props} onNext={onNext} />}
-        />
+        <Route path="/home" render={(props) => <Home {...props} />} />
         <Route
           path="/quiz-setup"
           render={(props) => <QuizForm {...props} onNext={onNext} />}
         />
         <Route
-          path="/questions"
+          path="/quiz-round"
           render={(props) => (
-            <QuestionForm
+            <QuizRound
               {...props}
-              quiz={quiz}
-              onAdd={onAdd}
+              round_number={round_number}
+              onNextRound={this.handleNextRound}
               onPublish={onPublish}
             />
           )}
@@ -54,16 +56,20 @@ class Routes extends Component {
           )}
         />
         <Route path="/log-out" render={(props) => <Logout {...props} />} />
-        <Route path="/profile" render={(props) => <Profile user={user} />} />
+        <Route
+          path="/profile"
+          render={(props) => <Profile {...props} user={user} />}
+        />
         <Route
           path="/user-dashboard"
           render={(props) => (
             <UserDashBoard {...props} quizes={quizes} user={user} />
           )}
         />
-        <Route
-          path="/manage"
-          render={(props) => <AdminDashboard {...props} user={user} />}
+        <ProtectedRoute
+          condition={getCurrentUser() && getCurrentUser().is_admin}
+          path="/"
+          component={AdminDashboard}
         />
         <Redirect from="/" exact to="/home" />
       </Switch>

@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
     name: req.body.name,
     password: req.body.password,
     no_of_participants: req.body.no_of_participants,
-    questions: req.body.questions,
+    rounds: req.body.rounds,
     creater_id: req.body.creater_id,
   });
 
@@ -41,7 +41,7 @@ router.put("/:id", [auth], async (req, res) => {
       name: req.body.name,
       password: req.body.password,
       no_of_participants: req.body.no_of_participants,
-      questions: req.body.questions,
+      rounds: req.body.rounds,
       creater_id: req.body.creater_id,
     },
     { new: true }
@@ -50,7 +50,7 @@ router.put("/:id", [auth], async (req, res) => {
   if (!quiz)
     return res.status(404).send("The quiz with the given ID was not found.");
 
-  res.send(customer);
+  res.send(quiz);
 });
 
 router.delete("/:id", [auth], async (req, res) => {
@@ -59,7 +59,7 @@ router.delete("/:id", [auth], async (req, res) => {
   if (!quiz)
     return res.status(404).send("The quiz with the given ID was not found");
 
-  res.send(customer);
+  res.send(quiz);
 });
 
 router.get("/:id", async (req, res) => {

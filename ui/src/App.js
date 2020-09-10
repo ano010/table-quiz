@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-
 import { publish } from "./services/quizService";
 import NavBar from "./components/navBar";
 import { getCurrentUser } from "./services/authService";
 import { getQuizesByCreater } from "./services/quizService";
-import Routes from "./components/routes";
+import Routes from "./components/routes/routes";
 
 class App extends Component {
   state = {
@@ -12,7 +11,7 @@ class App extends Component {
       name: "",
       password: "",
       no_of_participants: 0,
-      questions: [],
+      rounds: [],
     },
     user: {
       name: "",
@@ -28,7 +27,7 @@ class App extends Component {
     if (user) {
       const response = await getQuizesByCreater(user._id);
       const quizes = response.data;
-      console.log(quizes);
+
       this.setState({ quizes });
     }
   }
@@ -52,11 +51,18 @@ class App extends Component {
     this.setState({ quizes });
   };
 
-  handlePublish = async ({ authenticated }) => {
+  handlePublish = async ({ authenticated, name, questions }) => {
+    const round = {};
+    round.name = name;
+    round.questions = questions;
+    const rounds = [...this.state.quiz.rounds];
+    rounds.push(round);
+
+    const quiz = { ...this.state.quiz };
+    quiz.rounds = rounds;
     if (!authenticated) {
-      this.setState({ to_publish: true });
+      this.setState({ to_publish: true, quiz });
     } else {
-      const quiz = { ...this.state.quiz };
       quiz.creater_id = getCurrentUser()._id;
       await publish(quiz);
       const response = await getQuizesByCreater(getCurrentUser()._id);
@@ -74,12 +80,12 @@ class App extends Component {
     this.setState({ quiz });
   };
 
-  handleAdd = (question) => {
-    const questions = [...this.state.quiz.questions];
-    questions.push(question);
+  handleNextRound = (round) => {
+    const rounds = [...this.state.quiz.rounds];
+    rounds.push(round);
 
     const quiz = { ...this.state.quiz };
-    quiz.questions = questions;
+    quiz.rounds = rounds;
 
     this.setState({
       quiz,
@@ -88,12 +94,14 @@ class App extends Component {
 
   render() {
     const { quiz, user, quizes, to_publish } = this.state;
+    const round_number = this.state.quiz.rounds.length + 1;
 
     return (
       <React.Fragment>
         <NavBar user={this.state.user} />
         <main className="conatainer">
           <Routes
+            round_number={round_number}
             quiz={quiz}
             user={user}
             quizes={quizes}
@@ -101,7 +109,7 @@ class App extends Component {
             onNext={this.handleNext}
             onLoginOrSignup={this.handleLoginOrSignup}
             onPublish={this.handlePublish}
-            onAdd={this.handleAdd}
+            onNextRound={this.handleNextRound}
           />
         </main>
       </React.Fragment>

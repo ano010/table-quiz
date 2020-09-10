@@ -15,7 +15,7 @@ const Quiz = mongoose.model(
     no_of_participants: {
       type: Number,
     },
-    questions: {
+    rounds: {
       type: Array,
       default: [],
     },
@@ -31,7 +31,7 @@ function validateQuiz(quiz) {
     name: Joi.string().required().max(50),
     password: Joi.string(),
     no_of_participants: Joi.number(),
-    questions: Joi.array(),
+    rounds: Joi.array(),
     creater_id: Joi.string().required(),
   });
 

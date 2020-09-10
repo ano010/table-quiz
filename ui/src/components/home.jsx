@@ -8,7 +8,7 @@ class Home extends Component {
   };
 
   handleJoinQuiz = () => {
-    console.log("clicked");
+    this.props.history.push("/quiz-play");
   };
 
   render() {

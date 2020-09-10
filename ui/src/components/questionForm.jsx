@@ -1,6 +1,5 @@
 import React from "react";
 import Form from "./common/form";
-import auth from "../services/authService";
 import Joi from "joi-browser";
 
 class QuestionForm extends Form {
@@ -31,28 +30,15 @@ class QuestionForm extends Form {
     });
   };
 
-  handlePublish = () => {
-    if (auth.getCurrentUser()) {
-      this.props.onPublish({ authenticated: true });
-      this.props.history.push("/user-dashboard");
-    } else {
-      this.props.onPublish({ authenticated: false });
-      this.props.history.push("/log-in");
-    }
-  };
-
   render() {
     return (
       <div>
-        <h1>Question {this.props.quiz.questions.length + 1} </h1>
+        <h5 className="text-center">Question {this.props.q_number} </h5>
         {this.renderInput("type", "Type")}
         {this.renderInput("question", "Question")}
         {this.renderInput("answer", "Answer")}
         {this.renderInput("time_limit", "Time Limit")}
-        {this.renderButton("Add Question", this.handleAdd)}
-        <button className="btn btn-primary m-2" onClick={this.handlePublish}>
-          Publish Quiz
-        </button>
+        {this.renderButton("ADD QUESTION", this.handleAdd)}
       </div>
     );
   }

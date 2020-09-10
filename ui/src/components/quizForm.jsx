@@ -22,7 +22,7 @@ class QuizForm extends Form {
 
   handleSubmit = () => {
     this.props.onNext(this.state.data);
-    this.props.history.push("/questions");
+    this.props.history.push("/quiz-round");
   };
 
   render() {
