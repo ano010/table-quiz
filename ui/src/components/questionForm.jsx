@@ -33,12 +33,10 @@ class QuestionForm extends Form {
 
   handlePublish = () => {
     if (auth.getCurrentUser()) {
-      console.log(auth.getCurrentUser());
-      this.props.onPublish();
-      this.setState({ isPublished: true });
-      console.log("Quiz Published");
+      this.props.onPublish({ authenticated: true });
       this.props.history.push("/user-dashboard");
     } else {
+      this.props.onPublish({ authenticated: false });
       this.props.history.push("/log-in");
     }
   };

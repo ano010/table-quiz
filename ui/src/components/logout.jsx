@@ -6,8 +6,6 @@ class Logout extends Component {
     logout();
 
     window.location = "/";
-
-    console.log(getCurrentUser());
   }
 
   render() {

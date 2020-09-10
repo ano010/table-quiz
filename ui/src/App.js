@@ -1,17 +1,10 @@
 import React, { Component } from "react";
-import { Route, Switch, Redirect } from "react-router-dom";
+
 import { publish } from "./services/quizService";
-import QuizForm from "./components/quizForm";
-import QuestionForm from "./components/questionForm";
-import LoginForm from "./components/loginForm";
-import SignupForm from "./components/signupForm";
-import Home from "./components/common/home";
-import UserDashBoard from "./components/user-dashboard";
 import NavBar from "./components/navBar";
 import { getCurrentUser } from "./services/authService";
-import Logout from "./components/logout";
-import Profile from "./components/profile";
-import AdminDashboard from "./components/admin-dashboard";
+import { getQuizesByCreater } from "./services/quizService";
+import Routes from "./components/routes";
 
 class App extends Component {
   state = {
@@ -25,44 +18,50 @@ class App extends Component {
       name: "",
       email: "",
     },
+    to_publish: false,
+    quizes: [],
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const user = getCurrentUser();
     this.setState({ user });
+    if (user) {
+      const response = await getQuizesByCreater(user._id);
+      const quizes = response.data;
+      console.log(quizes);
+      this.setState({ quizes });
+    }
   }
 
-  handleLogin = () => {
-    const current_user = getCurrentUser();
-    const user = {};
-    if (current_user) {
-      user.name = current_user.name;
-      user.email = current_user.email;
-      user._id = current_user._id;
-      user.is_admin = current_user.is_admin;
-      this.setState({ user });
-    }
+  handleLoginOrSignup = async () => {
+    const user = getCurrentUser();
+    this.setState({ user });
+
+    this.getUpdatedQuizes();
   };
 
-  handleSignUp = () => {
-    const current_user = getCurrentUser();
-    const user = {};
-    if (current_user) {
-      user.name = current_user.name;
-      user.email = current_user.email;
-      user._id = current_user._id;
-      this.setState({ user });
-    }
-  };
-
-  handlePublish = async () => {
-    const quiz = { ...this.state.quiz };
-    quiz.creater_id = this.state.user._id;
-    this.setState({ quiz });
-    try {
+  getUpdatedQuizes = async () => {
+    if (this.state.to_publish) {
+      const quiz = { ...this.state.quiz };
+      quiz.creater_id = this.state.user._id;
       await publish(quiz);
-    } catch (ex) {
-      console.log(ex.response.data);
+      this.setState({ to_publish: false });
+    }
+    const response = await getQuizesByCreater(getCurrentUser()._id);
+    const quizes = response.data;
+    this.setState({ quizes });
+  };
+
+  handlePublish = async ({ authenticated }) => {
+    if (!authenticated) {
+      this.setState({ to_publish: true });
+    } else {
+      const quiz = { ...this.state.quiz };
+      quiz.creater_id = getCurrentUser()._id;
+      await publish(quiz);
+      const response = await getQuizesByCreater(getCurrentUser()._id);
+      const quizes = response.data;
+      this.setState({ quizes });
     }
   };
 
@@ -88,82 +87,22 @@ class App extends Component {
   };
 
   render() {
+    const { quiz, user, quizes, to_publish } = this.state;
+
     return (
       <React.Fragment>
         <NavBar user={this.state.user} />
         <main className="conatainer">
-          <Switch>
-            <Route
-              path="/home"
-              render={(props) => <Home {...props} onNext={this.handleNext} />}
-            />
-            <Route
-              path="/quiz-setup"
-              render={(props) => (
-                <QuizForm {...props} onNext={this.handleNext} />
-              )}
-            />
-            <Route
-              path="/questions"
-              render={(props) => (
-                <QuestionForm
-                  {...props}
-                  quiz={this.state.quiz}
-                  onAdd={this.handleAdd}
-                  onPublish={this.handlePublish}
-                />
-              )}
-            />
-            <Route
-              path="/log-in"
-              render={(props) => (
-                <LoginForm
-                  {...props}
-                  quiz={this.state.quiz}
-                  onLogin={this.handleLogin}
-                  onPublish={this.handlePublish}
-                />
-              )}
-            />
-            <Route
-              path="/sign-up"
-              render={(props) => (
-                <SignupForm
-                  {...props}
-                  quiz={this.state.quiz}
-                  onSignUp={this.handleSignUp}
-                  onPublish={this.handlePublish}
-                />
-              )}
-            />
-            <Route
-              path="/log-out"
-              render={(props) => (
-                <Logout
-                  {...props}
-                  quiz={this.state.quiz}
-                  onPublish={this.handlePublish}
-                />
-              )}
-            />
-            <Route
-              path="/profile"
-              render={(props) => <Profile user={this.state.user} />}
-            />
-            <Route
-              path="/user-dashboard"
-              render={(props) => (
-                <UserDashBoard {...props} user={this.state.user} />
-              )}
-            />
-            <Route
-              path="/manage"
-              render={(props) => (
-                <AdminDashboard {...props} user={this.state.user} />
-              )}
-            />
-            <Redirect from="/" exact to="/home" />
-          </Switch>
+          <Routes
+            quiz={quiz}
+            user={user}
+            quizes={quizes}
+            to_publish={to_publish}
+            onNext={this.handleNext}
+            onLoginOrSignup={this.handleLoginOrSignup}
+            onPublish={this.handlePublish}
+            onAdd={this.handleAdd}
+          />
         </main>
       </React.Fragment>
     );

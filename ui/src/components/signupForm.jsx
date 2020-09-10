@@ -24,7 +24,7 @@ class SignupForm extends Form {
 
       this.props.onSignUp();
       this.setState({ errors: null });
-      this.props.history.push("/home");
+      this.props.history.replace("/user-dashboard");
     } catch (ex) {
       console.log(ex);
       if (ex.response && ex.response.status === 400) {

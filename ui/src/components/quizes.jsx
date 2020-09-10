@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 class Quizes extends Component {
   state = {};
+
   render() {
     const quizes = this.props.quizes;
     let count = 1;

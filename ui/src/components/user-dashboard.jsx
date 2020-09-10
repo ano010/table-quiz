@@ -1,26 +1,27 @@
 import React, { Component } from "react";
 import Quizes from "./quizes";
-import { getQuizesByCreater } from "../services/quizService";
 import { getCurrentUser } from "../services/authService";
+import { getQuizesByCreater } from "../services/quizService";
 
 class UserDashBoard extends Component {
   state = {
-    quizes: [],
+    quizes: this.props.quizes,
   };
 
   async componentDidMount() {
     const user = getCurrentUser();
-    console.log(user);
-    const response = await getQuizesByCreater(user._id);
-    const quizes = response.data;
+    this.setState({ user });
+    if (user) {
+      const response = await getQuizesByCreater(user._id);
+      const quizes = response.data;
 
-    console.log(quizes);
-
-    this.setState({ quizes });
+      this.setState({ quizes });
+    }
   }
 
   render() {
-    return <Quizes quizes={this.state.quizes} />;
+    const { user, quizes } = this.props;
+    return <Quizes user={user} quizes={quizes} />;
   }
 }
 

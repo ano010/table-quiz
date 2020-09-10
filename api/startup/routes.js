@@ -1,4 +1,3 @@
-const error = require("../middleware/error");
 const express = require("express");
 const quizes = require("../routes/quizes");
 const users = require("../routes/users");
@@ -9,5 +8,4 @@ module.exports = function (app) {
   app.use("/api/quizes", quizes);
   app.use("/api/users", users);
   app.use("/api/auth", auth);
-  app.use(error);
 };

@@ -6,7 +6,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/me", auth, async (req, res) => {
-  const user = await User.findById(req.user._id).select("-password"); // user will be assigne by middleware(auth) function to the request.
+  const user = await User.findById(req.user._id).select("-password");
   res.send(user);
 });
 

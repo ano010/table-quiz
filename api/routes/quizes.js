@@ -31,46 +31,44 @@ router.post("/", async (req, res) => {
   res.send(quiz);
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", [auth], async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const customer = await Customer.findByIdAndUpdate(
+  const quiz = await Quiz.findByIdAndUpdate(
     req.params.id,
     {
-      isGold: req.body.isGold,
       name: req.body.name,
-      phone: req.body.phone,
+      password: req.body.password,
+      no_of_participants: req.body.no_of_participants,
+      questions: req.body.questions,
+      creater_id: req.body.creater_id,
     },
     { new: true }
   );
 
-  if (!customer)
-    return res
-      .status(404)
-      .send("The customer with the given ID was not found.");
+  if (!quiz)
+    return res.status(404).send("The quiz with the given ID was not found.");
 
   res.send(customer);
 });
 
-router.delete("/:id", async (req, res) => {
-  const customer = await Customer.findByIdAndRemove(req.params.id);
+router.delete("/:id", [auth], async (req, res) => {
+  const quiz = await Quiz.findByIdAndRemove(req.params.id);
 
-  if (!customer)
-    return res.status(404).send("The customer with the given ID was not found");
+  if (!quiz)
+    return res.status(404).send("The quiz with the given ID was not found");
 
   res.send(customer);
 });
 
 router.get("/:id", async (req, res) => {
-  const customer = await Customer.findById(req.params.id);
+  const quiz = await Quiz.findById(req.params.id);
 
-  if (!customer)
-    return res
-      .status(404)
-      .send("The customer with the given ID was not found.");
+  if (!quiz)
+    return res.status(404).send("The quiz with the given ID was not found.");
 
-  res.send(customer);
+  res.send(quiz);
 });
 
 module.exports = router;

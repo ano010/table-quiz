@@ -8,7 +8,6 @@ require("./startup/routes")(app);
 require("./startup/db")();
 app.use(cors());
 require("./startup/config")();
-require("./startup/validation")();
 
 const port = config.get("port");
 const server = app.listen(port, () =>

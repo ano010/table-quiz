@@ -22,7 +22,7 @@ class LoginForm extends Form {
       await auth.login(username, password);
       this.setState({ errors: null });
       this.props.onLogin();
-      this.props.history.push("/user-dashboard");
+      this.props.history.replace("/user-dashboard");
     } catch (ex) {
       console.log(ex);
       if (ex.response && ex.response.status === 400) {
